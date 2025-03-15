@@ -39,14 +39,13 @@ jobs:
 
             # Run test script  
             - name: Run Tests
-              run: npm run test   
-    deploy:
+              run: npm run test
+    build:
         needs: test
         runs-on: ubuntu-latest
         steps:
             - name: Get Code
-              uses: actions/checkout@v4
-            
+              uses: actions/checkout@v4 
             - name: Install Node 20
               uses: actions/setup-node@v4
               with:
@@ -61,6 +60,21 @@ jobs:
               run: npm ci
             - name: Build Project
               run: npm run build
+            - name: Upload Dist Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: dist-files
+                path: dist
+             
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download Dist Artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: dist-files
+                path: dist
             - name: Deploy
               run: echo "Deploy successfull"     
       
