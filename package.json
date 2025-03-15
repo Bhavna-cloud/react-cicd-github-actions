@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://Bhavna-cloud.github.io/react-cicd-github-actions",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
