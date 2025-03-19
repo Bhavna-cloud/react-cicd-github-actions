@@ -82,4 +82,4 @@ jobs:
              uses: rtCamp/action-slack-notify@v2
              with:
                 webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-                message: "Deployment to GitHub Pages completed."
+                message: "Deployment to GitHub Pages completed.."
