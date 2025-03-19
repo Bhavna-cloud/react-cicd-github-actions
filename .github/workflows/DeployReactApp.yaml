@@ -31,14 +31,8 @@ jobs:
     build:
         needs: test
         runs-on: ubuntu-latest
-        env:
-              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    
         steps:
-            - name: Send Slack Notification - Starting Build
-              uses: rtCamp/action-slack-notify@v2
-              with:
-                SLACK_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-                message: "Start building..."
             - name: Get Code
               uses: actions/checkout@v4 
             - name: Install Node 20
@@ -59,11 +53,6 @@ jobs:
               with:
                 name: github-pages
                 path: dist
-            - name: Send Slack Notification - Build Complete
-              uses: rtCamp/action-slack-notify@v2
-              with:
-                webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-                message: "Build completed."
 
     deploy:
         needs: build
@@ -80,8 +69,3 @@ jobs:
              uses: actions/deploy-pages@v4  
              with:
                 token: ${{ secrets.GITHUB_TOKEN }}
-           - name: Send Slack Notification - Deployment Complete
-             uses: rtCamp/action-slack-notify@v2
-             with:
-                webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-                message: "Deployment to GitHub Pages completed.."
