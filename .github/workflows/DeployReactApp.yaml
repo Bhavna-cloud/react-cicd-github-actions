@@ -30,7 +30,11 @@ jobs:
             - name: Send Slack Notification (Test)
               run: |
                 STATUS=${{ job.status }}
-                curl -X POST -H 'Content-type: application/json' --data '{"text":"Test Step: Hello World! The job status is: '"$STATUS"'."}' $SLACK_WEBHOOK_URL
+                if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+                  echo "Slack Webhook URL is missing!"
+                  exit 1
+                fi
+                curl -X POST -H 'Content-type: application/json' --data '{"text":"Test Step: Hello World! The job status is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     build:
         needs: test
@@ -59,7 +63,11 @@ jobs:
             - name: Send Slack Notification (Build)
               run: |
                 STATUS=${{ job.status }}
-                curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Step: Hello World! The job status is: '"$STATUS"'."}' $SLACK_WEBHOOK_URL
+                if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+                  echo "Slack Webhook URL is missing!"
+                  exit 1
+                fi
+                curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Step: Hello World! The job status is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     deploy:
         needs: build
@@ -79,4 +87,8 @@ jobs:
            - name: Send Slack Notification (Deploy)
              run: |
                STATUS=${{ job.status }}
-               curl -X POST -H 'Content-type: application/json' --data '{"text":"Deploy Step: Hello World! The job status is: '"$STATUS"'."}' $SLACK_WEBHOOK_URL
+               if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+                 echo "Slack Webhook URL is missing!"
+                 exit 1
+               fi
+               curl -X POST -H 'Content-type: application/json' --data '{"text":"Deploy Step: Hello World! The job status is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
