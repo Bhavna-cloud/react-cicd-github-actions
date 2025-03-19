@@ -36,24 +36,51 @@ jobs:
 
             - name: Send Slack Notification (Test)
               if: always()
+              env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
               run: |
                 STATUS=${{ job.status }}
+                BRANCH=${{ github.ref_name }}
+                COMMIT=${{ github.sha }}
+                REPO=${{ github.repository }}
+                JOB="Test"
+
                 if [ "$STATUS" == "success" ]; then
                   COLOR="#36a64f"
+                  EMOJI="✅"
                 elif [ "$STATUS" == "failure" ]; then
                   COLOR="#ff0000"
+                  EMOJI="❌"
                 else
                   COLOR="#ffcc00"
+                  EMOJI="⚠️"
                 fi
 
                 curl -X POST -H 'Content-type: application/json' --data '{
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
-                      "text": "*Test Job Status:* '"$STATUS"'"
+                      "blocks": [
+                        {
+                          "type": "section",
+                          "text": {
+                            "type": "mrkdwn",
+                            "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* `'"$COMMIT"'`\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                          }
+                        },
+                        {
+                          "type": "context",
+                          "elements": [
+                            {
+                              "type": "mrkdwn",
+                              "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
-                }' ${{ secrets.SLACK_WEBHOOK_URL }}
+                }' $SLACK_WEBHOOK
 
     build:
         needs: test
@@ -87,24 +114,51 @@ jobs:
 
             - name: Send Slack Notification (Build)
               if: always()
+              env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
               run: |
                 STATUS=${{ job.status }}
+                BRANCH=${{ github.ref_name }}
+                COMMIT=${{ github.sha }}
+                REPO=${{ github.repository }}
+                JOB="Build"
+
                 if [ "$STATUS" == "success" ]; then
                   COLOR="#36a64f"
+                  EMOJI="✅"
                 elif [ "$STATUS" == "failure" ]; then
                   COLOR="#ff0000"
+                  EMOJI="❌"
                 else
                   COLOR="#ffcc00"
+                  EMOJI="⚠️"
                 fi
 
                 curl -X POST -H 'Content-type: application/json' --data '{
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
-                      "text": "*Build Job Status:* '"$STATUS"'"
+                      "blocks": [
+                        {
+                          "type": "section",
+                          "text": {
+                            "type": "mrkdwn",
+                            "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* `'"$COMMIT"'`\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                          }
+                        },
+                        {
+                          "type": "context",
+                          "elements": [
+                            {
+                              "type": "mrkdwn",
+                              "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
-                }' ${{ secrets.SLACK_WEBHOOK_URL }}
+                }' $SLACK_WEBHOOK
 
     deploy:
         needs: build
@@ -124,21 +178,48 @@ jobs:
 
            - name: Send Slack Notification (Deploy)
              if: always()
+             env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
              run: |
                STATUS=${{ job.status }}
+               BRANCH=${{ github.ref_name }}
+               COMMIT=${{ github.sha }}
+               REPO=${{ github.repository }}
+               JOB="Deploy"
+
                if [ "$STATUS" == "success" ]; then
                  COLOR="#36a64f"
+                 EMOJI="✅"
                elif [ "$STATUS" == "failure" ]; then
                  COLOR="#ff0000"
+                 EMOJI="❌"
                else
                  COLOR="#ffcc00"
+                 EMOJI="⚠️"
                fi
 
                curl -X POST -H 'Content-type: application/json' --data '{
                  "attachments": [
                    {
                      "color": "'"$COLOR"'",
-                     "text": "*Deploy Job Status:* '"$STATUS"'"
+                     "blocks": [
+                       {
+                         "type": "section",
+                         "text": {
+                           "type": "mrkdwn",
+                           "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* `'"$COMMIT"'`\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                         }
+                       },
+                       {
+                         "type": "context",
+                         "elements": [
+                           {
+                             "type": "mrkdwn",
+                             "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
+                           }
+                         ]
+                       }
+                     ]
                    }
                  ]
-               }' ${{ secrets.SLACK_WEBHOOK_URL }}
+               }' $SLACK_WEBHOOK
