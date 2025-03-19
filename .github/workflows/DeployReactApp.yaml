@@ -34,7 +34,7 @@ jobs:
                   echo "Slack Webhook URL is missing!"
                   exit 1
                 fi
-                curl -X POST -H 'Content-type: application/json' --data '{"text":"Test Step: Hello World! The job status is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+                curl -X POST -H 'Content-type: application/json' --data '{"text":"Code testing is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     build:
         needs: test
@@ -67,7 +67,7 @@ jobs:
                   echo "Slack Webhook URL is missing!"
                   exit 1
                 fi
-                curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Step: Hello World! The job status is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+                curl -X POST -H 'Content-type: application/json' --data '{"text":"Build code is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     deploy:
         needs: build
@@ -91,4 +91,4 @@ jobs:
                  echo "Slack Webhook URL is missing!"
                  exit 1
                fi
-               curl -X POST -H 'Content-type: application/json' --data '{"text":"Deploy Step: Hello World! The job status is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+               curl -X POST -H 'Content-type: application/json' --data '{"text":"Code Deploy is: '"$STATUS"'."}' ${{ secrets.SLACK_WEBHOOK_URL }}
