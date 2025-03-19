@@ -27,11 +27,14 @@ jobs:
               run: npm ci 
             - name: Run Tests
               run: npm run test
+            - name: Send Slack Notification (Test)
+              run: |
+                STATUS=${{ job.status }}
+                curl -X POST -H 'Content-type: application/json' --data '{"text":"Test Step: Hello World! The job status is: '"$STATUS"'."}' $SLACK_WEBHOOK_URL
 
     build:
         needs: test
         runs-on: ubuntu-latest
-    
         steps:
             - name: Get Code
               uses: actions/checkout@v4 
@@ -53,6 +56,10 @@ jobs:
               with:
                 name: github-pages
                 path: dist
+            - name: Send Slack Notification (Build)
+              run: |
+                STATUS=${{ job.status }}
+                curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Step: Hello World! The job status is: '"$STATUS"'."}' $SLACK_WEBHOOK_URL
 
     deploy:
         needs: build
@@ -69,3 +76,7 @@ jobs:
              uses: actions/deploy-pages@v4  
              with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+           - name: Send Slack Notification (Deploy)
+             run: |
+               STATUS=${{ job.status }}
+               curl -X POST -H 'Content-type: application/json' --data '{"text":"Deploy Step: Hello World! The job status is: '"$STATUS"'."}' $SLACK_WEBHOOK_URL
