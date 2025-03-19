@@ -27,10 +27,16 @@ jobs:
               run: npm ci 
             - name: Run Tests
               run: npm run test
+
     build:
         needs: test
         runs-on: ubuntu-latest
         steps:
+            - name: Send Slack Notification - Starting Build
+              uses: rtCamp/action-slack-notify@v2
+              with:
+                webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+                message: "Start building..."
             - name: Get Code
               uses: actions/checkout@v4 
             - name: Install Node 20
@@ -51,13 +57,18 @@ jobs:
               with:
                 name: github-pages
                 path: dist
+            - name: Send Slack Notification - Build Complete
+              uses: rtCamp/action-slack-notify@v2
+              with:
+                webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+                message: "Build completed."
+
     deploy:
         needs: build
         runs-on: ubuntu-latest
         permissions:
-           pages: write      # to deploy to Pages
-           id-token: write   # to verify the deployment originates from an appropriate source  
-        # Deploy to the github-pages environment
+           pages: write      
+           id-token: write    
         environment:
            name: github-pages
            url: ${{ steps.deployment.outputs.page_url }}
@@ -66,20 +77,9 @@ jobs:
              id: deployment
              uses: actions/deploy-pages@v4  
              with:
-                token: ${{secrets.GITHUB_TOKEN}}
-           - name: Notify Slack about Deployment
-             uses: 8398a7/action-slack@v3
+                token: ${{ secrets.GITHUB_TOKEN }}
+           - name: Send Slack Notification - Deployment Complete
+             uses: rtCamp/action-slack-notify@v2
              with:
-               status: custom
-               fields: workflow, job, commit, repo, ref, author, took
-               custom_payload: |
-                 {
-                   "attachments": [
-                     {
-                       "color": "${{ job.status }}",
-                       "text": "Deployment to GitHub Pages ${{ job.status }}\nWorkflow: ${{ github.workflow }}\nJob: ${{ github.job }}\nCommit: ${{ github.sha }}\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref }}\nAuthor: ${{ github.actor }}\nTook: ${{ job.startedAt }} to ${{ job.completedAt }}"
-                     }
-                   ]
-                 }
-             env:
-               SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+                webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+                message: "Deployment to GitHub Pages completed."
