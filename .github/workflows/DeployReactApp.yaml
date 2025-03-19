@@ -31,11 +31,13 @@ jobs:
     build:
         needs: test
         runs-on: ubuntu-latest
+        env:
+              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         steps:
             - name: Send Slack Notification - Starting Build
               uses: rtCamp/action-slack-notify@v2
               with:
-                webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+                SLACK_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
                 message: "Start building..."
             - name: Get Code
               uses: actions/checkout@v4 
