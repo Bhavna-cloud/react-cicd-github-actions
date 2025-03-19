@@ -76,5 +76,5 @@ jobs:
                 name: dist-files
                 path: dist
             - name: Deploy
-              run: echo "Deploy successfull"     
+              run: echo "Deployment is successfull"     
       
