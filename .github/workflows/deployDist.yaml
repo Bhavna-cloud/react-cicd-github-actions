@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - 'feature/**'
+      - 'feature/'
     paths-ignore:
       - '.github/workflows/*'
       - README.md    
@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} 
+          key: ${{ runner.os }}-node-${{ hashFiles('/package-lock.json') }} 
 
       - name: Install Dependencies
         run: npm ci
@@ -37,9 +37,7 @@ jobs:
         if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          chmod +x .github/scripts/slack_notify.sh
-          bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test"
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test"
 
   build:
     needs: test
@@ -57,7 +55,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}     
+          key: ${{ runner.os }}-node-${{ hashFiles('/package-lock.json') }}     
 
       - name: Install Dependencies
         run: npm ci
@@ -78,9 +76,7 @@ jobs:
         if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          chmod +x .github/scripts/slack_notify.sh
-          bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build"
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build"
 
   deploy:
     needs: build
@@ -94,9 +90,8 @@ jobs:
 
       - name: Extract All Files
         run: |
-          tar -xvf deploy_dir/all_files.tar -C deploy_dir
-          ls -la deploy_dir
-
+          tar -xvf deploy_dir/all_files.tar -C .
+          ls -la
       - name: Deploy
         run: echo "Deployment is successful"
 
@@ -104,6 +99,4 @@ jobs:
         if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          chmod +x .github/scripts/slack_notify.sh
-          bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"
