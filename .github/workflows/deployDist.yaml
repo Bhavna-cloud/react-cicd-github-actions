@@ -91,7 +91,7 @@ jobs:
       - name: Extract All Files
         run: |
           tar -xvf deploy_dir/all_files.tar -C .
-          ls -lk
+          ls -la
       - name: Deploy
         run: echo "Deployment is successful"
 
