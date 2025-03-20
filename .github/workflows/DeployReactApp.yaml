@@ -34,6 +34,11 @@ jobs:
             - name: Run Tests
               run: npm run test
 
+            - name: Debug Webhook
+              run: echo "Webhook URL: $SLACK_WEBHOOK"
+              env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
             - name: Send Slack Notification (Test)
               if: always()
               env:
@@ -43,6 +48,7 @@ jobs:
                 BRANCH=${{ github.ref_name }}
                 COMMIT=${{ github.sha }}
                 REPO=${{ github.repository }}
+                WORKFLOW=${{ github.workflow }}
                 JOB="Test"
 
                 if [ "$STATUS" == "success" ]; then
@@ -57,10 +63,10 @@ jobs:
                 fi
 
                 curl -X POST -H 'Content-type: application/json' --data '{
+                  "text": "*Workflow:* '"$WORKFLOW"'",
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
-                      "title": "Workflow: Deploy React To GitHub Pages",
                       "blocks": [
                         {
                           "type": "section",
@@ -122,6 +128,7 @@ jobs:
                 BRANCH=${{ github.ref_name }}
                 COMMIT=${{ github.sha }}
                 REPO=${{ github.repository }}
+                WORKFLOW=${{ github.workflow }}
                 JOB="Build"
 
                 if [ "$STATUS" == "success" ]; then
@@ -136,10 +143,10 @@ jobs:
                 fi
 
                 curl -X POST -H 'Content-type: application/json' --data '{
+                  "text": "*Workflow:* '"$WORKFLOW"'",
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
-                      "title": "Workflow: Deploy React To GitHub Pages",
                       "blocks": [
                         {
                           "type": "section",
@@ -187,6 +194,7 @@ jobs:
                BRANCH=${{ github.ref_name }}
                COMMIT=${{ github.sha }}
                REPO=${{ github.repository }}
+               WORKFLOW=${{ github.workflow }}
                JOB="Deploy"
 
                if [ "$STATUS" == "success" ]; then
@@ -201,10 +209,10 @@ jobs:
                fi
 
                curl -X POST -H 'Content-type: application/json' --data '{
+                 "text": "*Workflow:* '"$WORKFLOW"'",
                  "attachments": [
                    {
                      "color": "'"$COLOR"'",
-                     "title": "Workflow: Deploy React To GitHub Pages",
                      "blocks": [
                        {
                          "type": "section",
@@ -225,4 +233,4 @@ jobs:
                      ]
                    }
                  ]
-               }' $SLACK_WEBHOOK
+               }' $SLACK_WEBHOOK
