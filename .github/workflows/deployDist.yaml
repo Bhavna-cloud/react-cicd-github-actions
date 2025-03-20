@@ -88,8 +88,8 @@ jobs:
             - name: Deploy
               run: echo "Deployment is successfull"  
             - name: Send Slack Notification (Deploy)
-             if: always()
-             env:
+              if: always()
+              env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-             run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"     
+              run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"     
       
