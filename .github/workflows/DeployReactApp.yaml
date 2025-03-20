@@ -1,6 +1,6 @@
 name: Notify on Workflow Failure
 
-on:
+onnn:
   workflow_run:
     workflows: ["Deploy React To GitHub Pages"]
     types:
