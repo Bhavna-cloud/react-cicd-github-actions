@@ -26,7 +26,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: ~/.npm
-                key: ${{ runner.os }}-node-${{ hashFiles('/package-lock.json') }} 
+                key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }} 
 
             - name: Install Dependencies
               run: npm ci 
@@ -39,6 +39,11 @@ jobs:
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
               run: |
+                if [ -z "$SLACK_WEBHOOK" ]; then
+                  echo "SLACK_WEBHOOK is not set. Skipping notification."
+                  exit 0
+                fi
+                
                 STATUS=${{ job.status }}
                 BRANCH=${{ github.ref_name }}
                 COMMIT=${{ github.sha }}
@@ -98,7 +103,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: ~/.npm
-                key: ${{ runner.os }}-node-${{ hashFiles('/package-lock.json') }}     
+                key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}     
 
             - name: Install Dependencies
               run: npm ci
@@ -117,6 +122,11 @@ jobs:
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
               run: |
+                if [ -z "$SLACK_WEBHOOK" ]; then
+                  echo "SLACK_WEBHOOK is not set. Skipping notification."
+                  exit 0
+                fi
+
                 STATUS=${{ job.status }}
                 BRANCH=${{ github.ref_name }}
                 COMMIT=${{ github.sha }}
@@ -176,11 +186,19 @@ jobs:
              with:
                 token: ${{ secrets.GITHUB_TOKEN }}
 
+           - name: Debug Slack Webhook (Deploy)
+             run: echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}"
+
            - name: Send Slack Notification (Deploy)
              if: always()
              env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
              run: |
+               if [ -z "$SLACK_WEBHOOK" ]; then
+                 echo "SLACK_WEBHOOK is not set. Skipping notification."
+                 exit 0
+               fi
+
                STATUS=${{ job.status }}
                BRANCH=${{ github.ref_name }}
                COMMIT=${{ github.sha }}
@@ -222,4 +240,4 @@ jobs:
                      ]
                    }
                  ]
-               }' $SLACK_WEBHOOK
+               }' $SLACK_WEBHOOK
