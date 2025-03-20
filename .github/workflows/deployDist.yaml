@@ -44,7 +44,7 @@ jobs:
               if: always()
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-              run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test"  
+              run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test"  
     build:
         needs: test
         runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
               if: always()
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-              run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build"    
+              run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build"    
              
     deploy:
         needs: build
@@ -91,5 +91,5 @@ jobs:
               if: always()
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-              run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"     
+              run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"     
       
