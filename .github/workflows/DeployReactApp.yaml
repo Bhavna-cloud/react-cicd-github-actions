@@ -38,55 +38,7 @@ jobs:
               if: always()
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-              run: |
-                if [ -z "$SLACK_WEBHOOK" ]; then
-                  echo "SLACK_WEBHOOK is not set. Skipping notification."
-                  exit 0
-                fi
-                
-                STATUS=${{ job.status }}
-                BRANCH=${{ github.ref_name }}
-                COMMIT=${{ github.sha }}
-                REPO=${{ github.repository }}
-                JOB="Test"
-
-                if [ "$STATUS" == "success" ]; then
-                  COLOR="#36a64f"
-                  EMOJI="✅"
-                elif [ "$STATUS" == "failure" ]; then
-                  COLOR="#ff0000"
-                  EMOJI="❌"
-                else
-                  COLOR="#ffcc00"
-                  EMOJI="⚠"
-                fi
-
-                curl -X POST -H 'Content-type: application/json' --data '{
-                  "text": "GitHub Actions Notification",
-                  "attachments": [
-                    {
-                      "color": "'"$COLOR"'",
-                      "blocks": [
-                        {
-                          "type": "section",
-                          "text": {
-                            "type": "mrkdwn",
-                            "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
-                          }
-                        },
-                        {
-                          "type": "context",
-                          "elements": [
-                            {
-                              "type": "mrkdwn",
-                              "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }' $SLACK_WEBHOOK
+              run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test"
 
     build:
         needs: test
@@ -122,55 +74,7 @@ jobs:
               if: always()
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-              run: |
-                if [ -z "$SLACK_WEBHOOK" ]; then
-                  echo "SLACK_WEBHOOK is not set. Skipping notification."
-                  exit 0
-                fi
-
-                STATUS=${{ job.status }}
-                BRANCH=${{ github.ref_name }}
-                COMMIT=${{ github.sha }}
-                REPO=${{ github.repository }}
-                JOB="Build"
-
-                if [ "$STATUS" == "success" ]; then
-                  COLOR="#36a64f"
-                  EMOJI="✅"
-                elif [ "$STATUS" == "failure" ]; then
-                  COLOR="#ff0000"
-                  EMOJI="❌"
-                else
-                  COLOR="#ffcc00"
-                  EMOJI="⚠"
-                fi
-
-                curl -X POST -H 'Content-type: application/json' --data '{
-                  "text": "GitHub Actions Notification",
-                  "attachments": [
-                    {
-                      "color": "'"$COLOR"'",
-                      "blocks": [
-                        {
-                          "type": "section",
-                          "text": {
-                            "type": "mrkdwn",
-                            "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
-                          }
-                        },
-                        {
-                          "type": "context",
-                          "elements": [
-                            {
-                              "type": "mrkdwn",
-                              "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }' $SLACK_WEBHOOK
+              run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build"
 
     deploy:
         needs: build
@@ -188,59 +92,8 @@ jobs:
              with:
                 token: ${{ secrets.GITHUB_TOKEN }}
 
-           - name: Debug Slack Webhook (Deploy)
-             run: echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}"
-
            - name: Send Slack Notification (Deploy)
              if: always()
              env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-             run: |
-               if [ -z "$SLACK_WEBHOOK" ]; then
-                 echo "SLACK_WEBHOOK is not set. Skipping notification."
-                 exit 0
-               fi
-
-               STATUS=${{ job.status }}
-               BRANCH=${{ github.ref_name }}
-               COMMIT=${{ github.sha }}
-               REPO=${{ github.repository }}
-               JOB="Deploy"
-
-               if [ "$STATUS" == "success" ]; then
-                 COLOR="#36a64f"
-                 EMOJI="✅"
-               elif [ "$STATUS" == "failure" ]; then
-                 COLOR="#ff0000"
-                 EMOJI="❌"
-               else
-                 COLOR="#ffcc00"
-                 EMOJI="⚠"
-               fi
-
-               curl -X POST -H 'Content-type: application/json' --data '{
-                 "text": "GitHub Actions Notification",
-                 "attachments": [
-                   {
-                     "color": "'"$COLOR"'",
-                     "blocks": [
-                       {
-                         "type": "section",
-                         "text": {
-                           "type": "mrkdwn",
-                           "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
-                         }
-                       },
-                       {
-                         "type": "context",
-                         "elements": [
-                           {
-                             "type": "mrkdwn",
-                             "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
-                           }
-                         ]
-                       }
-                     ]
-                   }
-                 ]
-               }' $SLACK_WEBHOOK
+             run: .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"
