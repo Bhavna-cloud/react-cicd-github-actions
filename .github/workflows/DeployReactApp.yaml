@@ -60,13 +60,12 @@ jobs:
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
-                      "title": "GitHub Actions Alert: Deploy React To GitHub Pages",
                       "blocks": [
                         {
                           "type": "section",
                           "text": {
                             "type": "mrkdwn",
-                            "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                            "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
                           }
                         },
                         {
@@ -139,13 +138,12 @@ jobs:
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
-                      "title": "GitHub Actions Alert: Deploy React To GitHub Pages",
                       "blocks": [
                         {
                           "type": "section",
                           "text": {
                             "type": "mrkdwn",
-                            "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                            "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
                           }
                         },
                         {
@@ -204,13 +202,12 @@ jobs:
                  "attachments": [
                    {
                      "color": "'"$COLOR"'",
-                     "title": "GitHub Actions Alert: Deploy React To GitHub Pages",
                      "blocks": [
                        {
                          "type": "section",
                          "text": {
                            "type": "mrkdwn",
-                           "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                           "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
                          }
                        },
                        {
@@ -225,4 +222,4 @@ jobs:
                      ]
                    }
                  ]
-               }' $SLACK_WEBHOOK
+               }' $SLACK_WEBHOOK
