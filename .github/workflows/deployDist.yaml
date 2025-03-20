@@ -90,7 +90,7 @@ jobs:
 
       - name: Extract All Files
         run: |
-          tar -xvf 
+          tar -xvf deploy_dir/all_files.tar -C deploy_dir
           ls -la
 
       - name: Deploy
