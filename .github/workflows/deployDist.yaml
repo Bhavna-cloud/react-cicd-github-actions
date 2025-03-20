@@ -91,11 +91,11 @@ jobs:
       - name: Extract All Files
         run: |
           tar -xvf deploy_dir/all_files.tar -C .
-          ls -la
+          ls -lk
       - name: Deploy
         run: echo "Deployment is successful"
 
-       Send Slack Notification (Deploy)
+      - name: Send Slack Notification (Deploy)
         if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
