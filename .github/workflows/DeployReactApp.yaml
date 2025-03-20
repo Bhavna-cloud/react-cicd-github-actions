@@ -161,69 +161,65 @@ jobs:
                 }' $SLACK_WEBHOOK
 
     deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-       pages: write      
-       id-token: write    
-    environment:
-       name: github-pages
-       url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-       - name: Deploy to GitHub Pages
-         id: deployment
-         uses: actions/deploy-pages@v4  
-         with:
-            token: ${{ secrets.GITHUB_TOKEN }}
+        needs: build
+        runs-on: ubuntu-latest
+        permissions:
+           pages: write      
+           id-token: write    
+        environment:
+           name: github-pages
+           url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+           - name: Deploy to GitHub Pages
+             id: deployment
+             uses: actions/deploy-pages@v4  
+             with:
+                token: ${{ secrets.GITHUB_TOKEN }}
 
-       # Debugging to check if the SLACK_WEBHOOK is correctly passed
-       - name: Debug SLACK_WEBHOOK in Deploy Job
-         run: echo "SLACK_WEBHOOK is: $SLACK_WEBHOOK"
+           - name: Send Slack Notification (Deploy)
+             if: always()
+             env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+             run: |
+               STATUS=${{ job.status }}
+               BRANCH=${{ github.ref_name }}
+               COMMIT=${{ github.sha }}
+               REPO=${{ github.repository }}
+               JOB="Deploy"
 
-       - name: Send Slack Notification (Deploy)
-         if: always()
-         env:
-            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-         run: |
-           STATUS=${{ job.status }}
-           BRANCH=${{ github.ref_name }}
-           COMMIT=${{ github.sha }}
-           REPO=${{ github.repository }}
-           JOB="Deploy"
+               if [ "$STATUS" == "success" ]; then
+                 COLOR="#36a64f"
+                 EMOJI="✅"
+               elif [ "$STATUS" == "failure" ]; then
+                 COLOR="#ff0000"
+                 EMOJI="❌"
+               else
+                 COLOR="#ffcc00"
+                 EMOJI="⚠"
+               fi
 
-           if [ "$STATUS" == "success" ]; then
-             COLOR="#36a64f"
-             EMOJI="✅"
-           elif [ "$STATUS" == "failure" ]; then
-             COLOR="#ff0000"
-             EMOJI="❌"
-           else
-             COLOR="#ffcc00"
-             EMOJI="⚠"
-           fi
-
-           curl -X POST -H 'Content-type: application/json' --data '{
-             "attachments": [
-               {
-                 "color": "'"$COLOR"'",
-                 "blocks": [
+               curl -X POST -H 'Content-type: application/json' --data '{
+                 "attachments": [
                    {
-                     "type": "section",
-                     "text": {
-                       "type": "mrkdwn",
-                       "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
-                     }
-                   },
-                   {
-                     "type": "context",
-                     "elements": [
+                     "color": "'"$COLOR"'",
+                     "blocks": [
                        {
-                         "type": "mrkdwn",
-                         "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
+                         "type": "section",
+                         "text": {
+                           "type": "mrkdwn",
+                           "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                         }
+                       },
+                       {
+                         "type": "context",
+                         "elements": [
+                           {
+                             "type": "mrkdwn",
+                             "text": "Repository: <https://github.com/'"$REPO"'|'"$REPO"'>"
+                           }
+                         ]
                        }
                      ]
                    }
                  ]
-               }
-             ]
-           }' $SLACK_WEBHOOK
+               }' $SLACK_WEBHOOK
