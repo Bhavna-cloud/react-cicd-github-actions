@@ -58,7 +58,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('/package-lock.json') }}     
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm
 
       - name: Build Project
         run: npm run build
