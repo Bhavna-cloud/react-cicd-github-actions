@@ -34,11 +34,6 @@ jobs:
             - name: Run Tests
               run: npm run test
 
-            - name: Debug Webhook
-              run: echo "Webhook URL: $SLACK_WEBHOOK"
-              env:
-                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-
             - name: Send Slack Notification (Test)
               if: always()
               env:
@@ -48,7 +43,6 @@ jobs:
                 BRANCH=${{ github.ref_name }}
                 COMMIT=${{ github.sha }}
                 REPO=${{ github.repository }}
-                WORKFLOW=${{ github.workflow }}
                 JOB="Test"
 
                 if [ "$STATUS" == "success" ]; then
@@ -63,16 +57,16 @@ jobs:
                 fi
 
                 curl -X POST -H 'Content-type: application/json' --data '{
-                  "text": "*Workflow:* '"$WORKFLOW"'",
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
+                      "title": "GitHub Actions Alert: Deploy React To GitHub Pages",
                       "blocks": [
                         {
                           "type": "section",
                           "text": {
                             "type": "mrkdwn",
-                            "text": "*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                            "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
                           }
                         },
                         {
@@ -128,7 +122,6 @@ jobs:
                 BRANCH=${{ github.ref_name }}
                 COMMIT=${{ github.sha }}
                 REPO=${{ github.repository }}
-                WORKFLOW=${{ github.workflow }}
                 JOB="Build"
 
                 if [ "$STATUS" == "success" ]; then
@@ -143,16 +136,16 @@ jobs:
                 fi
 
                 curl -X POST -H 'Content-type: application/json' --data '{
-                  "text": "*Workflow:* '"$WORKFLOW"'",
                   "attachments": [
                     {
                       "color": "'"$COLOR"'",
+                      "title": "GitHub Actions Alert: Deploy React To GitHub Pages",
                       "blocks": [
                         {
                           "type": "section",
                           "text": {
                             "type": "mrkdwn",
-                            "text": "*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                            "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
                           }
                         },
                         {
@@ -194,7 +187,6 @@ jobs:
                BRANCH=${{ github.ref_name }}
                COMMIT=${{ github.sha }}
                REPO=${{ github.repository }}
-               WORKFLOW=${{ github.workflow }}
                JOB="Deploy"
 
                if [ "$STATUS" == "success" ]; then
@@ -209,16 +201,16 @@ jobs:
                fi
 
                curl -X POST -H 'Content-type: application/json' --data '{
-                 "text": "*Workflow:* '"$WORKFLOW"'",
                  "attachments": [
                    {
                      "color": "'"$COLOR"'",
+                     "title": "GitHub Actions Alert: Deploy React To GitHub Pages",
                      "blocks": [
                        {
                          "type": "section",
                          "text": {
                            "type": "mrkdwn",
-                           "text": "*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+                           "text": "*Workflow:* Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
                          }
                        },
                        {
@@ -233,4 +225,4 @@ jobs:
                      ]
                    }
                  ]
-               }' $SLACK_WEBHOOK
+               }' $SLACK_WEBHOOK
