@@ -11,6 +11,7 @@ BRANCH=$2
 COMMIT=$3
 REPO=$4
 JOB=$5
+WORKFLOW=${GITHUB_WORKFLOW:-"Unknown Workflow"}  # Fetch workflow name from GitHub
 
 # Set color and emoji based on status
 if [ "$STATUS" == "success" ]; then
@@ -35,7 +36,7 @@ curl -X POST -H 'Content-type: application/json' --data '{
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "Workflow: Deploy React To GitHub Pages\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
+            "text": "*Workflow:* '"$WORKFLOW"'\n*Job:* '"$JOB"'\n*Branch:* '"$BRANCH"'\n*Commit:* '"$COMMIT"'\n*Status:* '"$EMOJI"' '"$STATUS"'"
           }
         },
         {
