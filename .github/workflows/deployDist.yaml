@@ -104,7 +104,7 @@ jobs:
           aws deploy create-deployment \
             --application-name GitHubAction-app \
             --deployment-group-name GitHubAction-app-dg \
-            --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar.gz,bundleType=tar
+            --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar,bundleType=tar
 
       - name: Send Slack Notification (Deploy)
         if: always()
