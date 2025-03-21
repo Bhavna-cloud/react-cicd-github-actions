@@ -63,7 +63,7 @@ jobs:
         run: npm run build
 
       - name: Archive Files (TAR)
-        run: tar -czvf deploy_package.tar.gz --exclude=node_modules --exclude=.git .
+        run: tar --exclude=node_modules --exclude=.git --exclude=all_files.tar -cvf all_files.tar .
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -97,14 +97,14 @@ jobs:
           aws-region: us-east-1 
 
       - name: Upload to S3
-        run: aws s3 cp deploy_package.tar.gz s3://my-deploy-bucket-003/deploy_package.tar.gz
+        run: aws s3 cp deploy_package.tar s3://my-deploy-bucket-003/deploy_package.tar
 
       - name: Trigger AWS CodeDeploy
         run: |
           aws deploy create-deployment \
             --application-name GitHubAction-app \
             --deployment-group-name GitHubAction-app-dg \
-            --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar.gz,bundleType=tgz
+            --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar.gz,bundleType=tar
 
       - name: Send Slack Notification (Deploy)
         if: always()
