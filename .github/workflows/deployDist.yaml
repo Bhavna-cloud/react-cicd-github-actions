@@ -42,7 +42,7 @@ jobs:
         if: always() # Ensures this step runs regardless of job result
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test Job Completed"
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test"
 
   build:
     needs: test
@@ -87,7 +87,7 @@ jobs:
         if: always() # Ensures this step runs regardless of job result
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build Job Completed"
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build"
 
   deploy:
     needs: build
@@ -131,4 +131,4 @@ jobs:
         if: always() # Ensures this step runs regardless of job result
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy Job Completed"
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy"
