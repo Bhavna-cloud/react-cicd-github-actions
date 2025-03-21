@@ -32,6 +32,12 @@ jobs:
       - name: Run Tests
         run: npm test
 
+      - name: Verify Slack Script Exists
+        run: ls -R .github/scripts/
+
+      - name: Set Script Permissions
+        run: chmod +x .github/scripts/slack_notify.sh
+
       - name: Send Slack Notification (Test)
         if: always()
         env:
@@ -71,6 +77,12 @@ jobs:
           name: deploy-package
           path: all_files.tar
 
+      - name: Verify Slack Script Exists
+        run: ls -R .github/scripts/
+
+      - name: Set Script Permissions
+        run: chmod +x .github/scripts/slack_notify.sh
+
       - name: Send Slack Notification (Build)
         if: always()
         env:
@@ -105,6 +117,12 @@ jobs:
             --application-name GitHubAction-app \
             --deployment-group-name GitHubAction-app-dg \
             --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar,bundleType=tar
+
+      - name: Verify Slack Script Exists
+        run: ls -R .github/scripts/
+
+      - name: Set Script Permissions
+        run: chmod +x .github/scripts/slack_notify.sh
 
       - name: Send Slack Notification (Deploy)
         if: always()
