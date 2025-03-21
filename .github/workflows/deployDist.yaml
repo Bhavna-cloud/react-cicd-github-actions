@@ -1,38 +1,134 @@
-deploy:
-  needs: build
-  runs-on: ubuntu-latest
-  permissions:
-    id-token: write 
-    contents: read
-  steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: deploy-package
-        path: .
+name: Deploy to AWS
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/*'
+      - README.md    
+  workflow_dispatch:        
 
-    - name: Extract TAR File
-      run: tar -xvf all_files.tar
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Configure AWS Credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: arn:aws:iam::842675994865:role/github-aws-oicd
-        aws-region: us-east-1 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Upload to S3
-      run: aws s3 cp all_files.tar s3://my-deploy-bucket-003/deploy_package.tar
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-    - name: Trigger AWS CodeDeploy
-      run: |
-        aws deploy create-deployment \
-          --application-name GitHubAction-app \
-          --deployment-group-name GitHubAction-app-dg \
-          --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar,bundleType=tar
+      - name: Install Dependencies
+        run: npm ci
 
-    # Final step: Slack notification for job completion
-    - name: Send Slack Notification (Deploy Complete)
-      if: always() # Ensures this step runs regardless of success or failure
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-      run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy Job Completed"
+      - name: Run Tests
+        run: npm test
+
+      - name: Verify Slack Script Exists
+        run: ls -R .github/scripts/
+
+      - name: Set Script Permissions
+        run: chmod +x .github/scripts/slack_notify.sh
+
+      - name: Send Slack Notification (Test Completed)
+        if: always() # Ensures this step runs regardless of job result
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Test Job Completed"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Archive Files (TAR)
+        run: tar --exclude=node_modules --exclude=.git --exclude=all_files.tar -cvf all_files.tar .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-package
+          path: all_files.tar
+
+      - name: Verify Slack Script Exists
+        run: ls -R .github/scripts/
+
+      - name: Set Script Permissions
+        run: chmod +x .github/scripts/slack_notify.sh
+
+      - name: Send Slack Notification (Build Completed)
+        if: always() # Ensures this step runs regardless of job result
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Build Job Completed"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write 
+      contents: read
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-package
+          path: .
+
+      - name: Extract TAR File
+        run: tar -xvf all_files.tar
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::842675994865:role/github-aws-oicd
+          aws-region: us-east-1 
+
+      - name: Upload to S3
+        run: aws s3 cp all_files.tar s3://my-deploy-bucket-003/deploy_package.tar
+
+      - name: Trigger AWS CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name GitHubAction-app \
+            --deployment-group-name GitHubAction-app-dg \
+            --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar,bundleType=tar
+
+      - name: Verify Slack Script Exists
+        run: ls -R .github/scripts/
+
+      - name: Set Script Permissions
+        run: chmod +x .github/scripts/slack_notify.sh
+
+      - name: Send Slack Notification (Deploy Completed)
+        if: always() # Ensures this step runs regardless of job result
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: bash .github/scripts/slack_notify.sh "${{ job.status }}" "${{ github.ref_name }}" "${{ github.sha }}" "${{ github.repository }}" "Deploy Job Completed"
