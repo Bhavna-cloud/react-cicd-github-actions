@@ -108,18 +108,18 @@ jobs:
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::842675994865:role/github-aws-oicd
+          role-to-assume: arn:aws:iam::{{secret.ACCOUNT_NO}}:role/github-aws-oicd
           aws-region: us-east-1 
 
       - name: Upload to S3
-        run: aws s3 cp all_files.tar s3://my-deploy-bucket-003/deploy_package.tar
+        run: aws s3 cp all_files.tar s3://{{secret.bucket_name}}/deploy_package.tar
 
       - name: Trigger AWS CodeDeploy
         run: |
           aws deploy create-deployment \
             --application-name GitHubAction-app \
             --deployment-group-name GitHubAction-app-dg \
-            --s3-location bucket=my-deploy-bucket-003,key=deploy_package.tar,bundleType=tar
+            --s3-location bucket={{secret.bucket_name}},key=deploy_package.tar,bundleType=tar
 
       - name: Verify Slack Script Exists
         run: ls -R .github/scripts/
